@@ -1,0 +1,26 @@
+name: Release
+on:
+    push:
+        tags:
+            - '*'
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: test
+              run: cargo test
+            - name: build
+              run: cargo build --release
+            - name: strip debug symbols
+              run: strip target/release/yamlmerge
+
+            - name: upload
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: target/release/yamlmerge
+                  tag: ${{ github.ref }}
+                  overwrite: true
+
+
